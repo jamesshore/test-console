@@ -44,7 +44,7 @@ The same API is also available on `stderr`.
 
 Redirects writes to `stdout` into an array instead of writing them to the console.
 
-* Returns an object with two properties:
+* `inspect`: Returned as an object with two properties:
   * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
   * `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
 
@@ -74,7 +74,7 @@ Just like `inspect()`, but automatically restores the console when done.
 
 * `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
-* `output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+* `output`: Passed into `fn` and also returned as an array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
 
 Example of using `inspectSync()` to test a synchronous function:
 
