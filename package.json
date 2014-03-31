@@ -24,5 +24,11 @@
   "bugs": {
     "url": "https://github.com/jamesshore/test-console/issues"
   },
-  "homepage": "https://github.com/jamesshore/test-console"
+  "homepage": "https://github.com/jamesshore/test-console",
+  "devDependencies": {
+    "jake": "^0.7.10",
+    "jshint": "^2.4.4",
+    "simplebuild-jshint": "^0.3.0",
+    "mocha": "^1.18.2"
+  }
 }
