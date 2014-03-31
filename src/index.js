@@ -1,67 +1,44 @@
 // Copyright (c) 2014 Titanium I.T. LLC. All rights reserved. For license, see "README" or "LICENSE" file.
 "use strict";
 
-var stdout = exports.stdout = {};
+exports.stdout = new TestStream(process.stdout);
+exports.stderr = new TestStream(process.stderr);
 
+function TestStream(stream) {
+	this._stream = stream;
+}
 
-
-
-stdout.inspect = function() {
+TestStream.prototype.inspect = function() {
 	// This code inspired by http://userinexperience.com/?p=714
 	var output = [];
+	var stream = this._stream;
 
-	var originalStdout = process.stdout.write;
-	process.stdout.write = function(string) {
+	var originalStdout = stream.write;
+	stream.write = function(string) {
 		output.push(string);
 	};
 
 	return {
 		output: output,
 		restore: function() {
-			process.stdout.write = originalStdout;
+			stream.write = originalStdout;
 		}
 	};
 };
 
-stdout.inspectSync = function(fn) {
-	var inspect = stdout.inspect();
+TestStream.prototype.inspectSync = function(fn) {
+	var inspect = this.inspect();
 	fn(inspect.output);
 	inspect.restore();
 	return inspect.output;
 };
 
-stdout.ignore = function(fn) {
-	return stdout.inspect().restore;
+TestStream.prototype.ignore = function() {
+	return this.inspect().restore;
 };
 
-stdout.ignoreSync = function(fn) {
-	stdout.inspectSync(function() {
+TestStream.prototype.ignoreSync = function(fn) {
+	this.inspectSync(function() {
 		fn();
 	});
-};
-
-var stderr = exports.stderr = {
-
-	inspect: null,
-	inspectSync: null,
-	ignore: null,
-	ignoreSync: null
-
-};
-
-stderr.inspect = function() {
-	// This code inspired by http://userinexperience.com/?p=714
-	var output = [];
-
-	var originalStdout = process.stderr.write;
-	process.stderr.write = function(string) {
-		output.push(string);
-	};
-
-	return {
-		output: output,
-		restore: function() {
-			process.stderr.write = originalStdout;
-		}
-	};
 };
