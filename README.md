@@ -3,10 +3,18 @@
 A simple and pragmatic library for testing Node.js console output.
 
 
-## Examples
+## Example
 
-TBD
+See the API section for more examples.
 
+```javascript
+var stdout = require("test-console").stdout;
+
+var output = stdout.inspectSync(function() {
+    console.log("foo");
+};
+assert.deepEqual(output, [ "foo\n "]);
+```
 
 ## Installation
 
@@ -14,10 +22,140 @@ This is a Node.js library. Install Node, then:
 
 `npm install test-console` (add `--save` or `--save-dev` if you want)
 
+To use in your functions, require it as follows:
+
+```javascript
+var stdout = require("test-console").stdout;
+var stderr = require("test-console").stderr;
+```
+
 
 ## API
 
-TBD
+* `stdout.inspect`: Redirects writes to `stdout` into an array instead of writing them to console.
+* `stdout.inspectSync`: Just like `inspect()`, but automatically restores the console when done.
+* `stdout.ignore`: Prevent writes to `stdout` from appearing on the console.
+* `stdout.ignoreSync`: Just like `ignore()`, but automatically restores the console when done.
+
+The same API is also available on `stderr`.
+
+
+### `inspect = stdout.inspect()`
+
+Redirects writes to `stdout` into an array instead of writing them to the console.
+
+* Takes no parameters.
+
+* Returns an object with two properties:
+** inspect.output (`array`): An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+** inspect.restore() (`function`): Call this function to restore stdout.write to its normal behavior.
+
+Example of using `inspect()` to test a synchronous function:
+
+```javascript
+var inspect = stdout.inspect();
+functionUnderTest();
+inspect.restore();
+assert.deepEqual(inspect.output, [ "foo\n" ]);
+```
+
+Example of using `inspect()` to test an asynchronous function callback:
+
+```javascript
+var inspect = stdout.inspect();
+functionUnderTest(function() {
+    inspect.restore();
+    assert.deepEqual(inspect.output, [ "foo\n" ]);
+});
+```
+
+
+### `output = stdout.inspectSync(fn)`
+
+Just like `inspect()`, but automatically restores the console when done.
+
+* fn(output) (`function`): The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
+
+* output (`array`): An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+
+Example of using `inspectSync()` to test a synchronous function:
+
+```javascript
+var output = stdout.inspectSync(function() {
+    functionUnderTest();
+});
+assert.deepEqual(output, [ "foo\n" ]);
+```
+
+Example of using `inspectSync() to incrementally test several synchronous functions:
+
+```javascript
+stdout.inspectSync(function(output) {
+    functionUnderTest();
+    assert.deepEqual(output, [ "foo\n" ]);
+    anotherFunctionUnderTest();
+    assert.deepEqual(output, [ "foo\n", "bar\n" ]);
+});
+```
+
+
+### `restore = stdout.ignore()`
+
+Prevent writes to `stdout` from appearing on the console.
+
+* restore() (`function`): Call this function to restore stdout.write to its normal behavior.
+
+Example of using `ignore()` to prevent a synchronous function from writing to the console:
+
+```javascript
+var restore = stdout.ignore();
+functionUnderTest();
+restore();
+```
+
+Example of using `ignore()` to prevent an asynchronous function from writing to the console:
+
+```javascript
+var restore = stdout.ignore();
+functionUnderTest(function() {
+    restore();
+});
+```
+
+Example of using `ignore()` to prevent a suite of tests from writing to the console:
+
+```javascript
+var restoreStdout;
+
+beforeEach(function() {
+    restoreStdout = stdout.ignore();
+};
+
+afterEach(function() {
+    restoreStdout();
+};
+
+// tests go here
+```
+
+
+### `ignoreSync(fn)`
+
+Just like `ignore()`, but automatically restores the console when done.
+
+* fn() (`function`): The function to run while ignoring stdout. After the function returns, stdout.write is automatically restored.
+
+Example of using `ignoreSync()` to prevent a synchronous function from writing to the console:
+
+```javascript
+stdout.ignore(function() {
+    functionUnderTest();
+});
+
+
+## Version History
+
+__0.7.0:__ `inspect()`, `inspectSync()`, `ignore()`, and `ignoreSync()`. (Initial release)
 
 
 ## Contributors

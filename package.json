@@ -1,6 +1,6 @@
 {
   "name": "test-console",
-  "version": "0.0.0",
+  "version": "0.6.0",
   "description": "A simple and pragmatic library for testing Node.js console output.",
   "main": "src/index.js",
   "scripts": {
