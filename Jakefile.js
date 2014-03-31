@@ -26,7 +26,7 @@ task("test", function() {
 
 	mocha.run(function(failures) {
 		if (failures) fail("Tests failed");
-		complete();
+		else complete();
 	});
 }, {async: true});
 
