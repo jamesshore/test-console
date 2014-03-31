@@ -13,7 +13,7 @@ TestStream.prototype.inspect = function() {
 	var output = [];
 	var stream = this._stream;
 
-	var originalStdout = stream.write;
+	var originalWrite = stream.write;
 	stream.write = function(string) {
 		output.push(string);
 	};
@@ -21,7 +21,7 @@ TestStream.prototype.inspect = function() {
 	return {
 		output: output,
 		restore: function() {
-			stream.write = originalStdout;
+			stream.write = originalWrite;
 		}
 	};
 };
