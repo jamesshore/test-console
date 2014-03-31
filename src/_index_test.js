@@ -66,6 +66,7 @@ describe("inspect", function() {
 	});
 });
 
+
 describe("'asynchronous' inspect", function() {
 
 	it("is like synchronous version, except you have to restore it manually", function() {
@@ -84,6 +85,48 @@ describe("'asynchronous' inspect", function() {
 			assert.deepEqual(output, [], "console should be suppressed");
 
 			inspect.restore();
+			console.log("bar");
+			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+		});
+	});
+
+});
+
+
+describe("ignore", function() {
+
+	it("simply disables output to console", function() {
+		// We'll use inspect() to make sure ignore() works. Inception! (Okay, that joke's getting old. Too bad! Mwahaha!)
+		stdout.inspectSync(function(output) {
+			stdout.ignoreSync(function() {
+				console.log("foo");
+			});
+			assert.deepEqual(output, [], "console should be ignored");
+			console.log("bar");
+			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+		});
+	});
+
+	it("doesn't provide any parameters", function() {
+		stdout.ignoreSync(function() {
+			assert.equal(arguments.length, 0, "# of arguments");
+		});
+	});
+
+});
+
+
+describe("'asynchronous' ignore", function() {
+
+	it("is like synchronous version, except you have to restore it manually", function() {
+		// inception!
+		stdout.inspectSync(function(output) {
+			var restore = stdout.ignore();
+
+			console.log("foo");
+			assert.deepEqual(output, [], "console should be suppressed");
+
+			restore();
 			console.log("bar");
 			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
 		});

@@ -4,7 +4,9 @@
 var stdout = exports.stdout = {};
 
 stdout.inspect = function() {
+	// This code inspired by http://userinexperience.com/?p=714
 	var output = [];
+
 	var originalStdout = process.stdout.write;
 	process.stdout.write = function(string) {
 		output.push(string);
@@ -25,25 +27,12 @@ stdout.inspectSync = function(fn) {
 	return inspect.output;
 };
 
+stdout.ignore = function(fn) {
+	return stdout.inspect().restore;
+};
 
-// This code inspired by http://userinexperience.com/?p=714
-//exports.override = function override(newStdout) {
-//	var original = process.stdout.write;
-//	process.stdout.write = newStdout;
-//	return function() {
-//		process.stdout.write = original;
-//	};
-//};
-//
-//exports.ignore = function ignore() {
-//	return exports.override(function() {});
-//};
-
-exports.inspect = function inspect(callback) {
-	var output = [];
-	var restoreStdout = exports.override(function(string) {
-		output.push(string);
+stdout.ignoreSync = function(fn) {
+	stdout.inspectSync(function() {
+		fn();
 	});
-	callback(output);
-	restoreStdout();
 };
