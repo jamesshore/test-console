@@ -43,7 +43,7 @@ describe("inspect", function() {
 			stdout.inspectSync(function() {
 				console.log("foo");
 			});
-			assert.deepEqual(output, [], "output should be suppressed");
+			assert.deepEqual(output, [], "console should be suppressed");
 		});
 	});
 
@@ -54,7 +54,7 @@ describe("inspect", function() {
 				// this space intentionally left blank
 			});
 			console.log("foo");
-			assert.deepEqual(output, [ "foo\n" ], "output should be restored");
+			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
 		});
 	});
 
@@ -64,7 +64,29 @@ describe("inspect", function() {
 		});
 		assert.deepEqual(output, [ "foo\n" ], "returned output");
 	});
+});
 
-	//todo: provides async version
+describe("'asynchronous' inspect", function() {
+
+	it("is like synchronous version, except you have to restore it manually", function() {
+		var inspect = stdout.inspect();
+		console.log("foo");
+		assert.deepEqual(inspect.output, [ "foo\n" ], "output");
+		inspect.restore();
+	});
+
+	it("prevents output to console until restored", function() {
+		// inception!
+		stdout.inspectSync(function(output) {
+			var inspect = stdout.inspect();
+
+			console.log("foo");
+			assert.deepEqual(output, [], "console should be suppressed");
+
+			inspect.restore();
+			console.log("bar");
+			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+		});
+	});
 
 });

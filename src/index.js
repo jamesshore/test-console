@@ -16,6 +16,21 @@ stdout.inspectSync = function(fn) {
 	return output;
 };
 
+stdout.inspect = function() {
+	var output = [];
+	var originalStdout = process.stdout.write;
+	process.stdout.write = function(string) {
+		output.push(string);
+	};
+
+	return {
+		output: output,
+		restore: function() {
+			process.stdout.write = originalStdout;
+		}
+	};
+};
+
 
 // This code inspired by http://userinexperience.com/?p=714
 //exports.override = function override(newStdout) {
