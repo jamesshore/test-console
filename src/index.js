@@ -12,6 +12,8 @@ stdout.inspectSync = function(fn) {
 
 	fn(output);
 	process.stdout.write = originalStdout;
+
+	return output;
 };
 
 

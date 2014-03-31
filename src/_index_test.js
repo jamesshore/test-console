@@ -58,6 +58,13 @@ describe("inspect", function() {
 		});
 	});
 
+	it("also returns output", function() {
+		var output = stdout.inspectSync(function() {
+			console.log("foo");
+		});
+		assert.deepEqual(output, [ "foo\n" ], "returned output");
+	});
+
 	//todo: provides async version
 
 });
