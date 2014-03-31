@@ -45,9 +45,7 @@ The same API is also available on `stderr`.
 Redirects writes to `stdout` into an array instead of writing them to the console.
 
 * Returns an object with two properties:
-
   * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
-
   * `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
 
 Example of using `inspect()` to test a synchronous function:
