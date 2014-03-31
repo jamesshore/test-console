@@ -22,7 +22,7 @@ This is a Node.js library. Install Node, then:
 
 `npm install test-console` (add `--save` or `--save-dev` if you want)
 
-To use in your functions, require it as follows:
+To use the library in your code, require it as follows:
 
 ```javascript
 var stdout = require("test-console").stdout;
@@ -47,8 +47,9 @@ Redirects writes to `stdout` into an array instead of writing them to the consol
 * Takes no parameters.
 
 * Returns an object with two properties:
-** inspect.output (`array`): An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
-** inspect.restore() (`function`): Call this function to restore stdout.write to its normal behavior.
+
+** `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+** `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
 
 Example of using `inspect()` to test a synchronous function:
 
@@ -59,7 +60,7 @@ inspect.restore();
 assert.deepEqual(inspect.output, [ "foo\n" ]);
 ```
 
-Example of using `inspect()` to test an asynchronous function callback:
+Example of using `inspect()` to test an asynchronous function:
 
 ```javascript
 var inspect = stdout.inspect();
@@ -74,9 +75,9 @@ functionUnderTest(function() {
 
 Just like `inspect()`, but automatically restores the console when done.
 
-* fn(output) (`function`): The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
+* `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
-* output (`array`): An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+* `output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
 
 Example of using `inspectSync()` to test a synchronous function:
 
@@ -103,7 +104,9 @@ stdout.inspectSync(function(output) {
 
 Prevent writes to `stdout` from appearing on the console.
 
-* restore() (`function`): Call this function to restore stdout.write to its normal behavior.
+* Takes no parameters.
+
+* `restore()`: Call this function to restore stdout.write to its normal behavior.
 
 Example of using `ignore()` to prevent a synchronous function from writing to the console:
 
@@ -151,6 +154,7 @@ Example of using `ignoreSync()` to prevent a synchronous function from writing t
 stdout.ignore(function() {
     functionUnderTest();
 });
+```
 
 
 ## Version History
