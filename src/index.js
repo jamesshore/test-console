@@ -3,19 +3,6 @@
 
 var stdout = exports.stdout = {};
 
-stdout.inspectSync = function(fn) {
-	var output = [];
-	var originalStdout = process.stdout.write;
-	process.stdout.write = function(string) {
-		output.push(string);
-	};
-
-	fn(output);
-	process.stdout.write = originalStdout;
-
-	return output;
-};
-
 stdout.inspect = function() {
 	var output = [];
 	var originalStdout = process.stdout.write;
@@ -29,6 +16,13 @@ stdout.inspect = function() {
 			process.stdout.write = originalStdout;
 		}
 	};
+};
+
+stdout.inspectSync = function(fn) {
+	var inspect = stdout.inspect();
+	fn(inspect.output);
+	inspect.restore();
+	return inspect.output;
 };
 
 
