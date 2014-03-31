@@ -3,6 +3,7 @@
 
 var assert = require("chai").assert;
 var stdout = require("./index.js").stdout;
+var stderr = require("./index.js").stderr;
 
 describe("inspect", function() {
 
@@ -130,6 +131,25 @@ describe("'asynchronous' ignore", function() {
 			console.log("bar");
 			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
 		});
+	});
+
+});
+
+
+describe("stderr", function() {
+
+	it("has everything stdout does, only for stderr", function() {
+		assert.isDefined(stderr.inspect, "inspect");
+		assert.isDefined(stderr.inspectSync, "inspectSync");
+		assert.isDefined(stderr.ignore, "ignore");
+		assert.isDefined(stderr.ignoreSync, "ignoreSync");
+	});
+
+	it("actually works", function() {
+		var inspect = stderr.inspect();
+		process.stderr.write("foo");
+		assert.deepEqual(inspect.output, [ "foo" ], "output");
+		inspect.restore();
 	});
 
 });

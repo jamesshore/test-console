@@ -3,6 +3,9 @@
 
 var stdout = exports.stdout = {};
 
+
+
+
 stdout.inspect = function() {
 	// This code inspired by http://userinexperience.com/?p=714
 	var output = [];
@@ -35,4 +38,30 @@ stdout.ignoreSync = function(fn) {
 	stdout.inspectSync(function() {
 		fn();
 	});
+};
+
+var stderr = exports.stderr = {
+
+	inspect: null,
+	inspectSync: null,
+	ignore: null,
+	ignoreSync: null
+
+};
+
+stderr.inspect = function() {
+	// This code inspired by http://userinexperience.com/?p=714
+	var output = [];
+
+	var originalStdout = process.stderr.write;
+	process.stderr.write = function(string) {
+		output.push(string);
+	};
+
+	return {
+		output: output,
+		restore: function() {
+			process.stderr.write = originalStdout;
+		}
+	};
 };
