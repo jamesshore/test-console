@@ -44,12 +44,10 @@ The same API is also available on `stderr`.
 
 Redirects writes to `stdout` into an array instead of writing them to the console.
 
-* Takes no parameters.
-
 * Returns an object with two properties:
 
-** `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
-** `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
+* * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+* * `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
 
 Example of using `inspect()` to test a synchronous function:
 
@@ -104,8 +102,6 @@ stdout.inspectSync(function(output) {
 
 Prevent writes to `stdout` from appearing on the console.
 
-* Takes no parameters.
-
 * `restore()`: Call this function to restore stdout.write to its normal behavior.
 
 Example of using `ignore()` to prevent a synchronous function from writing to the console:
@@ -146,7 +142,7 @@ afterEach(function() {
 
 Just like `ignore()`, but automatically restores the console when done.
 
-* fn() (`function`): The function to run while ignoring stdout. After the function returns, stdout.write is automatically restored.
+* `fn()`: The function to run while ignoring stdout. After the function returns, stdout.write is automatically restored.
 
 Example of using `ignoreSync()` to prevent a synchronous function from writing to the console:
 
@@ -159,7 +155,7 @@ stdout.ignore(function() {
 
 ## Version History
 
-__0.7.0:__ `inspect()`, `inspectSync()`, `ignore()`, and `ignoreSync()`. (Initial release)
+__0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignoreSync()`
 
 
 ## Contributors
