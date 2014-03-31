@@ -1,0 +1,28 @@
+{
+  "name": "test-console",
+  "version": "0.0.0",
+  "description": "A simple and pragmatic library for testing Node.js console output.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jake"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesshore/test-console"
+  },
+  "keywords": [
+    "console",
+    "stdout",
+    "stderr",
+    "test",
+    "spy",
+    "test",
+    "double"
+  ],
+  "author": "James Shore",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamesshore/test-console/issues"
+  },
+  "homepage": "https://github.com/jamesshore/test-console"
+}
