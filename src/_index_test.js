@@ -59,6 +59,24 @@ describe("inspect", function() {
 		});
 	});
 
+	it("restores old behavior even when an exception occurs", function() {
+		// inception!
+		stdout.inspectSync(function(output) {
+			var exceptionPropagated = false;
+			try {
+				stdout.inspectSync(function() {
+					throw new Error("intentional exception");
+				});
+			}
+			catch (err) {
+				exceptionPropagated = true;
+			}
+			assert.isTrue(exceptionPropagated, "exception should be propagated");
+			console.log("foo");
+			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
+		});
+	});
+
 	it("also returns output", function() {
 		var output = stdout.inspectSync(function() {
 			console.log("foo");

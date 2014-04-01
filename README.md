@@ -154,6 +154,8 @@ stdout.ignore(function() {
 
 ## Version History
 
+__0.7.1:__ Bug fix: Sync() versions restore old behavior even if exception occurs
+
 __0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignoreSync()`
 
 

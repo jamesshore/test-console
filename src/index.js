@@ -28,8 +28,12 @@ TestStream.prototype.inspect = function() {
 
 TestStream.prototype.inspectSync = function(fn) {
 	var inspect = this.inspect();
-	fn(inspect.output);
-	inspect.restore();
+	try {
+		fn(inspect.output);
+	}
+	finally {
+		inspect.restore();
+	}
 	return inspect.output;
 };
 
