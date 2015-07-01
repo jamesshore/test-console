@@ -27,6 +27,8 @@ TestStream.prototype.inspect = function() {
 };
 
 TestStream.prototype.inspectSync = function(fn) {
+	if (fn === undefined) throw new Error("inspectSync requires a function parameter");
+
 	var inspect = this.inspect();
 	try {
 		fn(inspect.output);

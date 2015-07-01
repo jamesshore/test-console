@@ -5,7 +5,7 @@ var assert = require("chai").assert;
 var stdout = require("./index.js").stdout;
 var stderr = require("./index.js").stderr;
 
-describe("inspect", function() {
+describe("'synchronous' inspect", function() {
 
 	it("calls passed-in function synchronously", function() {
 		var fnCalled = false;
@@ -16,6 +16,12 @@ describe("inspect", function() {
 		});
 		inspectReturned = true;
 		assert.isTrue(fnCalled, "function should have been called");
+	});
+
+	it("fails nicely when user forgets to pass in a function", function() {
+		assert.throws(function() {
+			stdout.inspectSync();
+		}, "inspectSync requires a function parameter");
 	});
 
 	it("provides writes to passed-in function", function() {
@@ -112,7 +118,7 @@ describe("'asynchronous' inspect", function() {
 });
 
 
-describe("ignore", function() {
+describe("'synchronous' ignore", function() {
 
 	it("simply disables output to console", function() {
 		// We'll use inspect() to make sure ignore() works. Inception! (Okay, that joke's getting old. Too bad! Mwahaha!)
