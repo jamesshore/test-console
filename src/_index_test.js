@@ -21,7 +21,7 @@ describe("'synchronous' inspect", function() {
 	it("fails nicely when user forgets to pass in a function", function() {
 		assert.throws(function() {
 			stdout.inspectSync();
-		}, "inspectSync requires a function parameter");
+		}, "inspectSync() requires a function parameter. Did you mean to call inspect()?");
 	});
 
 	it("provides writes to passed-in function", function() {
@@ -94,6 +94,12 @@ describe("'synchronous' inspect", function() {
 
 describe("'asynchronous' inspect", function() {
 
+	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
+		assert.throws(function() {
+			stdout.inspect(function() {});
+		}, "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?");
+	});
+
 	it("is like synchronous version, except you have to restore it manually", function() {
 		var inspect = stdout.inspect();
 		console.log("foo");
@@ -120,6 +126,12 @@ describe("'asynchronous' inspect", function() {
 
 describe("'synchronous' ignore", function() {
 
+	it("fails nicely when user forgets to pass in a function", function() {
+		assert.throws(function() {
+			stdout.ignoreSync();
+		}, "ignoreSync() requires a function parameter. Did you mean to call ignore()?");
+	});
+
 	it("simply disables output to console", function() {
 		// We'll use inspect() to make sure ignore() works. Inception! (Okay, that joke's getting old. Too bad! Mwahaha!)
 		stdout.inspectSync(function(output) {
@@ -142,6 +154,12 @@ describe("'synchronous' ignore", function() {
 
 
 describe("'asynchronous' ignore", function() {
+
+	it("fails nicely when user confuses it for ignoreSync and passes in a function", function() {
+		assert.throws(function() {
+			stdout.ignore(function() {});
+		}, "ignore() doesn't take a function parameter. Did you mean to call ignoreSync()?");
+	});
 
 	it("is like synchronous version, except you have to restore it manually", function() {
 		// inception!

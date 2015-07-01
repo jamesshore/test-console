@@ -9,6 +9,8 @@ function TestStream(stream) {
 }
 
 TestStream.prototype.inspect = function() {
+	expectNoArguments(arguments, "inspect", "inspectSync");
+
 	// This code inspired by http://userinexperience.com/?p=714
 	var output = [];
 	var stream = this._stream;
@@ -27,7 +29,7 @@ TestStream.prototype.inspect = function() {
 };
 
 TestStream.prototype.inspectSync = function(fn) {
-	if (fn === undefined) throw new Error("inspectSync requires a function parameter");
+	expectOneFunction(arguments, "inspectSync", "inspect");
 
 	var inspect = this.inspect();
 	try {
@@ -40,11 +42,29 @@ TestStream.prototype.inspectSync = function(fn) {
 };
 
 TestStream.prototype.ignore = function() {
+	expectNoArguments(arguments, "ignore", "ignoreSync");
+
 	return this.inspect().restore;
 };
 
 TestStream.prototype.ignoreSync = function(fn) {
+	expectOneFunction(arguments, "ignoreSync", "ignore");
+
 	this.inspectSync(function() {
 		fn();
 	});
 };
+
+function expectNoArguments(args, calledFunction, functionToCallInstead) {
+	if (args.length !== 0) {
+		throw new Error(calledFunction + "() doesn't take a function parameter. Did you mean to call " +
+			functionToCallInstead + "()?");
+	}
+}
+
+function expectOneFunction(args, calledFunction, functionToCallInstead) {
+	if (args.length !== 1) {
+		throw new Error(calledFunction + "() requires a function parameter. Did you mean to call " +
+			functionToCallInstead + "()?");
+	}
+}
