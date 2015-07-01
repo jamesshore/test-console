@@ -23,7 +23,7 @@ task("lint", function() {
 desc("Run tests");
 task("test", function() {
 	console.log("Testing JavaScript: ");
-	var mocha = new Mocha({ui: "bdd"});
+	var mocha = new Mocha({ ui: "bdd", reporter: "dot" });
 	testFiles().forEach(mocha.addFile.bind(mocha));
 
 	mocha.run(function(failures) {
