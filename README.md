@@ -165,6 +165,13 @@ __0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignor
 
 Created by James Shore. Inspired by Brandon Satrom's [Automated Testing of Standard Output in Node.js](http://userinexperience.com/?p=714).
 
+### Release Process
+
+1. Update version history in readme
+2. Ensure clean build: `./jake.sh`
+3. Update npm version: `npm version [major|minor|patch]`
+4. Release to npm: `npm publish`
+5. Release to github: `git push && git push --tags`
 
 
 ## License
