@@ -154,6 +154,8 @@ stdout.ignore(function() {
 
 ## Version History
 
+__1.0.0:__ API fails with nice error messages when called with wrong number of arguments.
+
 __0.7.1:__ Bug fix: Sync() versions restore old behavior even if exception occurs
 
 __0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignoreSync()`
@@ -169,7 +171,7 @@ Created by James Shore. Inspired by Brandon Satrom's [Automated Testing of Stand
 
 The MIT License (MIT)
 
-Copyright (c) 2014 James Shore
+Copyright (c) 2014-2015 James Shore
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
