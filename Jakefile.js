@@ -7,11 +7,12 @@ var Mocha = require("mocha");
 
 desc("Validate code (lint and test)");
 task("default", ["lint", "test"], function() {
-	console.log("\n\nOK");
+	console.log("\n\nBUILD OK");
 });
 
 desc("Lint everything");
 task("lint", function() {
+	process.stdout.write("Linting JavaScript: ");
 	jshint.checkFiles({
 		files: [ "*.js", "src/**/*.js" ],
 		options: lintOptions(),
@@ -21,6 +22,7 @@ task("lint", function() {
 
 desc("Run tests");
 task("test", function() {
+	console.log("Testing JavaScript: ");
 	var mocha = new Mocha({ui: "bdd"});
 	testFiles().forEach(mocha.addFile.bind(mocha));
 
