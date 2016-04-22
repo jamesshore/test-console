@@ -127,11 +127,11 @@ var restoreStdout;
 
 beforeEach(function() {
     restoreStdout = stdout.ignore();
-};
+});
 
 afterEach(function() {
     restoreStdout();
-};
+});
 
 // tests go here
 ```
@@ -146,7 +146,7 @@ Just like `ignore()`, but automatically restores the console when done.
 Example of using `ignoreSync()` to prevent a synchronous function from writing to the console:
 
 ```javascript
-stdout.ignore(function() {
+stdout.ignoreSync(function() {
     functionUnderTest();
 });
 ```
