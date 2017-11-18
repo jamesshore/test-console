@@ -54,23 +54,54 @@ describe("'synchronous' inspect", function() {
 		});
 	});
 
+    it("mocks isTTY value", function() {
+        // More inception!
+        stdout.inspectSync(function(output) {
+            var originalIsTTY = process.stdout.isTTY;
+            stdout.inspectSync({isTTY: !originalIsTTY}, function() {
+                assert.equal(process.stdout.isTTY, !originalIsTTY);
+            });
+            console.log("foo");
+            assert.deepEqual(output, [ "foo\n" ], "console should be restored");
+            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
+        });
+    });
+
+    it("doesn't mock isTTY value", function() {
+        // still assuming inspectSync() works and trying both ways
+        stdout.inspectSync({isTTY: true}, function(output) {
+            stdout.inspectSync(function() {
+                assert.equal(process.stdout.isTTY, true);
+            });
+        });
+
+        stdout.inspectSync({isTTY: false}, function(output) {
+            stdout.inspectSync(function() {
+                assert.equal(process.stdout.isTTY, false);
+            });
+        });
+    });
+
 	it("restores old behavior when done", function() {
 		// More inception!
 		stdout.inspectSync(function(output) {
-			stdout.inspectSync(function() {
+            var originalIsTTY = process.stdout.isTTY;
+			stdout.inspectSync({isTTY: !originalIsTTY}, function() {
 				// this space intentionally left blank
 			});
 			console.log("foo");
 			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
+            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
 		});
 	});
 
 	it("restores old behavior even when an exception occurs", function() {
 		// inception!
 		stdout.inspectSync(function(output) {
+            var originalIsTTY = process.stdout.isTTY;
 			var exceptionPropagated = false;
 			try {
-				stdout.inspectSync(function() {
+				stdout.inspectSync({isTTY: !process.stdout.isTTY}, function() {
 					throw new Error("intentional exception");
 				});
 			}
@@ -80,6 +111,7 @@ describe("'synchronous' inspect", function() {
 			assert.isTrue(exceptionPropagated, "exception should be propagated");
 			console.log("foo");
 			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
+			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
 		});
 	});
 
