@@ -37,12 +37,17 @@ var stderr = require("test-console").stderr;
 * `stdout.ignore`: Prevent writes to `stdout` from appearing on the console.
 * `stdout.ignoreSync`: Just like `ignore()`, but automatically restores the console when done.
 
+All functions accept an optional options object as the first argument, where isTTY is the only available option. isTTY, if defined, will override the `stdout` field of the same name.
+
 The same API is also available on `stderr`.
 
 
-### `inspect = stdout.inspect()`
+### `inspect = stdout.inspect(options)`
 
 Redirects writes to `stdout` into an array instead of writing them to the console.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
 
 * `inspect`: Returned as an object with two properties:
   * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
@@ -68,9 +73,13 @@ functionUnderTest(function() {
 ```
 
 
-### `output = stdout.inspectSync(fn)`
+### `output = stdout.inspectSync(options, fn)`
+Or: `output = stdout.inspectSync(fn)`
 
 Just like `inspect()`, but automatically restores the console when done.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
 
 * `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
@@ -97,9 +106,12 @@ stdout.inspectSync(function(output) {
 ```
 
 
-### `restore = stdout.ignore()`
+### `restore = stdout.ignore(options)`
 
 Prevent writes to `stdout` from appearing on the console.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
 
 * `restore()`: Call this function to restore stdout.write to its normal behavior.
 
@@ -127,19 +139,23 @@ var restoreStdout;
 
 beforeEach(function() {
     restoreStdout = stdout.ignore();
-};
+});
 
 afterEach(function() {
     restoreStdout();
-};
+});
 
 // tests go here
 ```
 
 
-### `ignoreSync(fn)`
+### `ignoreSync(options, fn)`
+Or: `ignoreSync(fn)`
 
 Just like `ignore()`, but automatically restores the console when done.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
 
 * `fn()`: The function to run while ignoring stdout. After the function returns, stdout.write is automatically restored.
 
@@ -165,6 +181,7 @@ __0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignor
 
 Created by James Shore. Inspired by Brandon Satrom's [Automated Testing of Standard Output in Node.js](http://userinexperience.com/?p=714).
 
+Option for mocking isTTY added by Jason Boileau.
 
 
 ## License
