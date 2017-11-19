@@ -19,9 +19,13 @@ describe("'synchronous' inspect", function() {
 	});
 
 	it("fails nicely when user forgets to pass in a function", function() {
+		var errMsg = "inspectSync() requires a function parameter. Did you mean to call inspect()?";
 		assert.throws(function() {
 			stdout.inspectSync();
-		}, "inspectSync() requires a function parameter. Did you mean to call inspect()?");
+		}, errMsg);
+        assert.throws(function() {
+            stdout.inspectSync({});
+        }, errMsg);
 	});
 
 	it("provides writes to passed-in function", function() {
@@ -55,29 +59,33 @@ describe("'synchronous' inspect", function() {
 	});
 
     it("mocks isTTY value", function() {
-        // More inception!
-        stdout.inspectSync(function(output) {
-            var originalIsTTY = process.stdout.isTTY;
-            stdout.inspectSync({isTTY: !originalIsTTY}, function() {
-                assert.equal(process.stdout.isTTY, !originalIsTTY);
-            });
-            console.log("foo");
-            assert.deepEqual(output, [ "foo\n" ], "console should be restored");
-            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
-        });
+		var originalIsTTY = process.stdout.isTTY;
+		stdout.inspectSync({isTTY: !originalIsTTY}, function() {
+			assert.equal(process.stdout.isTTY, !originalIsTTY, 'isTTY should be changed');
+		});
+		assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
     });
 
     it("doesn't mock isTTY value", function() {
-        // still assuming inspectSync() works and trying both ways
-        stdout.inspectSync({isTTY: true}, function(output) {
+    	// Testing for various argument lists
+        var originalIsTTY = process.stdout.isTTY;
+        stdout.inspectSync(function() {
+            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
+        });
+        stdout.inspectSync({}, function() {
+            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
+        });
+
+        // testing for both original values of isTTY for failure modes that don't occur for both isTTY=false and isTTY=true
+        stdout.inspectSync({isTTY: true}, function() {
             stdout.inspectSync(function() {
-                assert.equal(process.stdout.isTTY, true);
+                assert.equal(process.stdout.isTTY, true, 'isTTY should still be true if original value was true');
             });
         });
 
-        stdout.inspectSync({isTTY: false}, function(output) {
+        stdout.inspectSync({isTTY: false}, function() {
             stdout.inspectSync(function() {
-                assert.equal(process.stdout.isTTY, false);
+                assert.equal(process.stdout.isTTY, false, 'isTTY should still be false if original value was false');
             });
         });
     });
@@ -127,9 +135,13 @@ describe("'synchronous' inspect", function() {
 describe("'asynchronous' inspect", function() {
 
 	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
-		assert.throws(function() {
-			stdout.inspect(function() {});
-		}, "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?");
+		const errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
+        assert.throws(function() {
+            stdout.inspect(function() {});
+        }, errMsg);
+        assert.throws(function() {
+            stdout.inspect({}, function() {});
+        }, errMsg);
 	});
 
 	it("is like synchronous version, except you have to restore it manually", function() {

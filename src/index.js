@@ -79,7 +79,6 @@ TestStream.prototype.ignoreSync = function(options, fn) {
 
 function expectNoFunction(args, calledFunction, functionToCallInstead) {
 	if (args.length && typeof args[0] === 'function' || args.length > 1) {
-		console.log(args);
 		throw new Error(calledFunction + "() doesn't take a function parameter. Did you mean to call " +
 			functionToCallInstead + "()?");
 	}
