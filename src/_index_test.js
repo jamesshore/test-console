@@ -63,7 +63,7 @@ describe("'synchronous' inspect", function() {
 		stdout.inspectSync({isTTY: !originalIsTTY}, function() {
 			assert.equal(process.stdout.isTTY, !originalIsTTY, 'isTTY should be changed');
 		});
-		assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
+		assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
     });
 
     it("doesn't mock isTTY value", function() {
@@ -99,7 +99,7 @@ describe("'synchronous' inspect", function() {
 			});
 			console.log("foo");
 			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
-            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
+            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
 		});
 	});
 
@@ -119,7 +119,7 @@ describe("'synchronous' inspect", function() {
 			assert.isTrue(exceptionPropagated, "exception should be propagated");
 			console.log("foo");
 			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
-			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored')
+			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
 		});
 	});
 
@@ -135,7 +135,7 @@ describe("'synchronous' inspect", function() {
 describe("'asynchronous' inspect", function() {
 
 	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
-		const errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
+		var errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
         assert.throws(function() {
             stdout.inspect(function() {});
         }, errMsg);
