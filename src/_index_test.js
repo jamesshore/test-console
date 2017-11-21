@@ -23,9 +23,9 @@ describe("'synchronous' inspect", function() {
 		assert.throws(function() {
 			stdout.inspectSync();
 		}, errMsg);
-        assert.throws(function() {
-            stdout.inspectSync({});
-        }, errMsg);
+		assert.throws(function() {
+			stdout.inspectSync({});
+		}, errMsg);
 	});
 
 	it("provides writes to passed-in function", function() {
@@ -58,67 +58,67 @@ describe("'synchronous' inspect", function() {
 		});
 	});
 
-    it("mocks isTTY value", function() {
+	it("mocks isTTY value", function() {
 		var originalIsTTY = process.stdout.isTTY;
-		stdout.inspectSync({isTTY: !originalIsTTY}, function() {
+		stdout.inspectSync({ isTTY: !originalIsTTY }, function() {
 			assert.equal(process.stdout.isTTY, !originalIsTTY, 'isTTY should be changed');
 		});
 		assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
-    });
+	});
 
-    it("doesn't mock isTTY value", function() {
-    	// Testing for various argument lists
-        var originalIsTTY = process.stdout.isTTY;
-        stdout.inspectSync(function() {
-            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
-        });
-        stdout.inspectSync({}, function() {
-            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
-        });
+	it("doesn't mock isTTY value", function() {
+		// Testing for various argument lists
+		var originalIsTTY = process.stdout.isTTY;
+		stdout.inspectSync(function() {
+			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
+		});
+		stdout.inspectSync({}, function() {
+			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
+		});
 
-        // testing for both original values of isTTY for failure modes that don't occur for both isTTY=false and isTTY=true
-        stdout.inspectSync({isTTY: true}, function() {
-            stdout.inspectSync(function() {
-                assert.equal(process.stdout.isTTY, true, 'isTTY should still be true if original value was true');
-            });
-        });
+		// testing for both original values of isTTY for failure modes that don't occur for both isTTY=false and isTTY=true
+		stdout.inspectSync({ isTTY: true }, function() {
+			stdout.inspectSync(function() {
+				assert.equal(process.stdout.isTTY, true, 'isTTY should still be true if original value was true');
+			});
+		});
 
-        stdout.inspectSync({isTTY: false}, function() {
-            stdout.inspectSync(function() {
-                assert.equal(process.stdout.isTTY, false, 'isTTY should still be false if original value was false');
-            });
-        });
-    });
+		stdout.inspectSync({ isTTY: false }, function() {
+			stdout.inspectSync(function() {
+				assert.equal(process.stdout.isTTY, false, 'isTTY should still be false if original value was false');
+			});
+		});
+	});
 
 	it("restores old behavior when done", function() {
 		// More inception!
 		stdout.inspectSync(function(output) {
-            var originalIsTTY = process.stdout.isTTY;
-			stdout.inspectSync({isTTY: !originalIsTTY}, function() {
+			var originalIsTTY = process.stdout.isTTY;
+			stdout.inspectSync({ isTTY: !originalIsTTY }, function() {
 				// this space intentionally left blank
 			});
 			console.log("foo");
-			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
-            assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
+			assert.deepEqual(output, ["foo\n"], "console should be restored");
+			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
 		});
 	});
 
 	it("restores old behavior even when an exception occurs", function() {
 		// inception!
 		stdout.inspectSync(function(output) {
-            var originalIsTTY = process.stdout.isTTY;
+			var originalIsTTY = process.stdout.isTTY;
 			var exceptionPropagated = false;
 			try {
-				stdout.inspectSync({isTTY: !process.stdout.isTTY}, function() {
+				stdout.inspectSync({ isTTY: !process.stdout.isTTY }, function() {
 					throw new Error("intentional exception");
 				});
 			}
-			catch (err) {
+			catch(err) {
 				exceptionPropagated = true;
 			}
 			assert.isTrue(exceptionPropagated, "exception should be propagated");
 			console.log("foo");
-			assert.deepEqual(output, [ "foo\n" ], "console should be restored");
+			assert.deepEqual(output, ["foo\n"], "console should be restored");
 			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
 		});
 	});
@@ -127,7 +127,7 @@ describe("'synchronous' inspect", function() {
 		var output = stdout.inspectSync(function() {
 			console.log("foo");
 		});
-		assert.deepEqual(output, [ "foo\n" ], "returned output");
+		assert.deepEqual(output, ["foo\n"], "returned output");
 	});
 });
 
@@ -136,18 +136,18 @@ describe("'asynchronous' inspect", function() {
 
 	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
 		var errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
-        assert.throws(function() {
-            stdout.inspect(function() {});
-        }, errMsg);
-        assert.throws(function() {
-            stdout.inspect({}, function() {});
-        }, errMsg);
+		assert.throws(function() {
+			stdout.inspect(function() {});
+		}, errMsg);
+		assert.throws(function() {
+			stdout.inspect({}, function() {});
+		}, errMsg);
 	});
 
 	it("is like synchronous version, except you have to restore it manually", function() {
 		var inspect = stdout.inspect();
 		console.log("foo");
-		assert.deepEqual(inspect.output, [ "foo\n" ], "output");
+		assert.deepEqual(inspect.output, ["foo\n"], "output");
 		inspect.restore();
 	});
 
@@ -161,7 +161,7 @@ describe("'asynchronous' inspect", function() {
 
 			inspect.restore();
 			console.log("bar");
-			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+			assert.deepEqual(output, ["bar\n"], "console should be restored");
 		});
 	});
 
@@ -184,7 +184,7 @@ describe("'synchronous' ignore", function() {
 			});
 			assert.deepEqual(output, [], "console should be ignored");
 			console.log("bar");
-			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+			assert.deepEqual(output, ["bar\n"], "console should be restored");
 		});
 	});
 
@@ -215,7 +215,7 @@ describe("'asynchronous' ignore", function() {
 
 			restore();
 			console.log("bar");
-			assert.deepEqual(output, [ "bar\n" ], "console should be restored");
+			assert.deepEqual(output, ["bar\n"], "console should be restored");
 		});
 	});
 
@@ -234,7 +234,7 @@ describe("stderr", function() {
 	it("actually works", function() {
 		var inspect = stderr.inspect();
 		process.stderr.write("foo");
-		assert.deepEqual(inspect.output, [ "foo" ], "output");
+		assert.deepEqual(inspect.output, ["foo"], "output");
 		inspect.restore();
 	});
 

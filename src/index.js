@@ -25,16 +25,16 @@ TestStream.prototype.inspect = function(options) {
 		output.push(string);
 	};
 
-    var originalIsTTY = stream.isTTY;
+	var originalIsTTY = stream.isTTY;
 	if (isTTY !== undefined) {
-        stream.isTTY = isTTY;
-    }
+		stream.isTTY = isTTY;
+	}
 
 	return {
 		output: output,
 		restore: function() {
 			stream.write = originalWrite;
-            stream.isTTY = originalIsTTY;
+			stream.isTTY = originalIsTTY;
 		}
 	};
 };
@@ -67,10 +67,10 @@ TestStream.prototype.ignore = function(options) {
 TestStream.prototype.ignoreSync = function(options, fn) {
 	expectFunction(arguments, "ignoreSync", "ignore");
 
-    if (arguments.length === 1) {
-        fn = options;
-        options = {};
-    }
+	if (arguments.length === 1) {
+		fn = options;
+		options = {};
+	}
 
 	this.inspectSync(options, function() {
 		fn();
@@ -85,7 +85,7 @@ function expectNoFunction(args, calledFunction, functionToCallInstead) {
 }
 
 function expectFunction(args, calledFunction, functionToCallInstead) {
-    if (args.length === 0 || args.length > 2 || typeof args[args.length-1] !== 'function') {
+	if (args.length === 0 || args.length > 2 || typeof args[args.length - 1] !== 'function') {
 		throw new Error(calledFunction + "() requires a function parameter. Did you mean to call " +
 			functionToCallInstead + "()?");
 	}
