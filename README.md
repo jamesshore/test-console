@@ -170,6 +170,8 @@ stdout.ignoreSync(function() {
 
 ## Version History
 
+__1.1.0:__ Add ability to override stdout.isTTY (and stderr.isTTY).
+
 __1.0.0:__ API fails with nice error messages when called with wrong number of arguments.
 
 __0.7.1:__ Bug fix: Sync() versions restore old behavior even if exception occurs
