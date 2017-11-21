@@ -66,7 +66,7 @@ describe("'synchronous' inspect", function() {
 		assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should be restored');
 	});
 
-	it("doesn't mock isTTY value", function() {
+	it("uses existing isTTY value by default", function() {
 		// Testing for various argument lists
 		var originalIsTTY = process.stdout.isTTY;
 		stdout.inspectSync(function() {
