@@ -2,82 +2,86 @@
 "use strict";
 var EventEmitter = require("events");
 
+class TestStream {
+
+	constructor(stream) {
+		this._stream = stream;
+	}
+
+	inspect(options) {
+		expectNoFunction(arguments, "inspect", "inspectSync");
+
+		var isTTY;
+		if (options && options.isTTY !== undefined) {
+			isTTY = options.isTTY;
+		}
+
+		// This code inspired by http://userinexperience.com/?p=714
+		var output = [];
+		var stream = this._stream;
+		var res = new EventEmitter();
+
+		var originalWrite = stream.write;
+		stream.write = (string) => {
+			output.push(string);
+			res.emit("data", string);
+		};
+
+		var originalIsTTY = stream.isTTY;
+		if (isTTY !== undefined) {
+			stream.isTTY = isTTY;
+		}
+
+		res.output = output;
+		res.restore = () => {
+			stream.write = originalWrite;
+			stream.isTTY = originalIsTTY;
+		};
+		return res;
+	}
+
+	inspectSync(options, fn) {
+		expectFunction(arguments, "inspectSync", "inspect");
+
+		if (arguments.length === 1) {
+			fn = options;
+			options = {};
+		}
+
+		var inspect = this.inspect(options);
+		try {
+			fn(inspect.output);
+		}
+		finally {
+			inspect.restore();
+		}
+		return inspect.output;
+	}
+
+	ignore(options) {
+		expectNoFunction(arguments, "ignore", "ignoreSync");
+
+		return this.inspect(options).restore;
+	}
+
+	ignoreSync(options, fn) {
+		expectFunction(arguments, "ignoreSync", "ignore");
+
+		if (arguments.length === 1) {
+			fn = options;
+			options = {};
+		}
+
+		this.inspectSync(options, () => {
+			fn();
+		});
+	}
+
+}
+
 exports.stdout = new TestStream(process.stdout);
 exports.stderr = new TestStream(process.stderr);
 
-function TestStream(stream) {
-	this._stream = stream;
-}
-
-TestStream.prototype.inspect = function(options) {
-	expectNoFunction(arguments, "inspect", "inspectSync");
-
-	var isTTY;
-	if (options && options.isTTY !== undefined) {
-		isTTY = options.isTTY;
-	}
-
-	// This code inspired by http://userinexperience.com/?p=714
-	var output = [];
-	var stream = this._stream;
-	var res = new EventEmitter();
-
-	var originalWrite = stream.write;
-	stream.write = (string) => {
-		output.push(string);
-		res.emit("data", string);
-	};
-
-	var originalIsTTY = stream.isTTY;
-	if (isTTY !== undefined) {
-		stream.isTTY = isTTY;
-	}
-
-	res.output = output;
-	res.restore = () => {
-		stream.write = originalWrite;
-		stream.isTTY = originalIsTTY;
-	};
-	return res;
-};
-
-TestStream.prototype.inspectSync = function(options, fn) {
-	expectFunction(arguments, "inspectSync", "inspect");
-
-	if (arguments.length === 1) {
-		fn = options;
-		options = {};
-	}
-
-	var inspect = this.inspect(options);
-	try {
-
-		fn(inspect.output);
-	}
-	finally {
-		inspect.restore();
-	}
-	return inspect.output;
-};
-
-TestStream.prototype.ignore = function(options) {
-	expectNoFunction(arguments, "ignore", "ignoreSync");
-
-	return this.inspect(options).restore;
-};
-
-TestStream.prototype.ignoreSync = function(options, fn) {
-	expectFunction(arguments, "ignoreSync", "ignore");
-
-	if (arguments.length === 1) {
-		fn = options;
-		options = {};
-	}
-
-	this.inspectSync(options, () => {
-		fn();
-	});
-};
 
 function expectNoFunction(args, calledFunction, functionToCallInstead) {
 	if (args.length && typeof args[0] === 'function' || args.length > 1) {
