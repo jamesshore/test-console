@@ -49,9 +49,10 @@ Redirects writes to `stdout` into an array instead of writing them to the consol
 * `options`: object [optional]
   * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
 
-* `inspect`: Returned as an object with two properties:
+* `inspect`: Returned as an `EventEmitter` with two properties and one event:
   * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
-  * `inspect.restore()`: Call this function to restore stdout.write to its normal behavior.
+  * `inspect.restore()`: Call this function to restore `stdout.write()` to its normal behavior.
+  * `data` event: This event fires every time `stdout.write()` is called.
 
 Example of using `inspect()` to test a synchronous function:
 
@@ -62,7 +63,7 @@ inspect.restore();
 assert.deepEqual(inspect.output, [ "foo\n" ]);
 ```
 
-Example of using `inspect()` to test an asynchronous function:
+Example of using `inspect()` to test an asynchronous function with a callback:
 
 ```javascript
 const inspect = stdout.inspect();
@@ -70,6 +71,19 @@ functionUnderTest(() => {
     inspect.restore();
     assert.deepEqual(inspect.output, [ "foo\n" ]);
 });
+```
+
+Example of using `inspect()` to listen for an event:
+
+```javascript
+const inspect = stdout.inspect();
+let output = "";
+inspect.on("data", (chunk) => {
+    output += chunk;
+});
+await functionUnderTestAsync();
+inspect.restore();
+assert.equal(output, "foo\n");
 ```
 
 
@@ -150,6 +164,7 @@ afterEach(() => {
 
 
 ### `ignoreSync(options, fn)`
+
 Or: `ignoreSync(fn)`
 
 Just like `ignore()`, but automatically restores the console when done.
@@ -170,6 +185,8 @@ stdout.ignoreSync(() => {
 
 ## Version History
 
+__1.2.0:__ Add events to stdout.inspect() return value (and stderr).
+
 __1.1.0:__ Add ability to override stdout.isTTY (and stderr.isTTY).
 
 __1.0.0:__ API fails with nice error messages when called with wrong number of arguments.
@@ -184,6 +201,8 @@ __0.7.0:__ Initial release: `inspect()`, `inspectSync()`, `ignore()`, and `ignor
 Created by James Shore. Inspired by Brandon Satrom's [Automated Testing of Standard Output in Node.js](http://userinexperience.com/?p=714).
 
 Option for mocking isTTY added by Jason Boileau.
+
+Inspect `data` event added by Tim Toohey.
 
 
 ### Release Process
