@@ -185,7 +185,7 @@ stdout.ignoreSync(() => {
 
 ## Version History
 
-__1.2.0:__ Add events to stdout.inspect() return value (and stderr).
+__2.0.0:__ Add events to stdout.inspect() return value (and stderr). Add support for async/await. BREAKING CHANGE: Requires Node 7.6.0 or higher (for ES6 and async/await support)
 
 __1.1.0:__ Add ability to override stdout.isTTY (and stderr.isTTY).
 

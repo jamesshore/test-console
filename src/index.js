@@ -23,7 +23,7 @@ TestStream.prototype.inspect = function(options) {
 	var res = new EventEmitter();
 
 	var originalWrite = stream.write;
-	stream.write = function(string) {
+	stream.write = (string) => {
 		output.push(string);
 		res.emit("data", string);
 	};
@@ -34,7 +34,7 @@ TestStream.prototype.inspect = function(options) {
 	}
 
 	res.output = output;
-	res.restore = function() {
+	res.restore = () => {
 		stream.write = originalWrite;
 		stream.isTTY = originalIsTTY;
 	};
@@ -74,7 +74,7 @@ TestStream.prototype.ignoreSync = function(options, fn) {
 		options = {};
 	}
 
-	this.inspectSync(options, function() {
+	this.inspectSync(options, () => {
 		fn();
 	});
 };

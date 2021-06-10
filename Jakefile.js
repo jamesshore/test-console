@@ -40,6 +40,7 @@ function testFiles() {
 
 function lintOptions() {
 	return {
+		esnext: true,
 		bitwise: true,
 		curly: false,
 		eqeqeq: true,
