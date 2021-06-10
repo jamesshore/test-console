@@ -83,6 +83,15 @@ class TestStream {
 		});
 	}
 
+	async ignoreAsync(options, fnAsync) {
+		expectFunction(arguments, "ignoreAsync", "ignore");
+		[ options, fnAsync ] = normalizeArgs(options, fnAsync);
+
+		await this.inspectAsync(options, async () => {
+			await fnAsync();
+		});
+	}
+
 }
 
 exports.stdout = new TestStream(process.stdout);

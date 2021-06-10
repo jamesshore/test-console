@@ -37,6 +37,7 @@ const stderr = require("test-console").stderr;
 * `stdout.inspectAsync`: Just like `inspectSync()`, but works with async functions.
 * `stdout.ignore`: Prevent writes to `stdout` from appearing on the console.
 * `stdout.ignoreSync`: Just like `ignore()`, but automatically restores the console when done.
+* `stdout.ignoreAsync`: Just like `ignoreSync()`, but works with async functions.
 
 All functions accept an optional options object as the first argument, where isTTY is the only available option. isTTY, if defined, will override the `stdout` field of the same name.
 
@@ -129,11 +130,11 @@ Just like `inspectSync()`, but works with asynchronous functions.
 * `options`: object [optional]
   * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`.
 
-* `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
+* `fnAsync(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
-* `output`: Passed into `fn` and also returned as an array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+* `output`: Passed into `fnAsync` and also returned as an array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
 
-Example of using `inspectSync()` to test an asynchronous function:
+Example of using `inspectAsync()` to test an asynchronous function:
 
 ```javascript
 const output = await stdout.inspectAsync(async () => {
@@ -171,7 +172,7 @@ functionUnderTest();
 restore();
 ```
 
-Example of using `ignore()` to prevent an asynchronous function from writing to the console:
+Example of using `ignore()` to prevent an asynchronous function with a callback from writing to the console:
 
 ```javascript
 const restore = stdout.ignore();
@@ -217,9 +218,29 @@ stdout.ignoreSync(() => {
 ```
 
 
+### `ignoreAsync(options, fnAsync)`
+
+Or: `ignoreAsync(fn)`
+
+Just like `ignoreSync()`, but works with async/await.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
+
+* `fnAsync()`: The function to run while ignoring stdout. After the function returns, stdout.write is automatically restored.
+
+Example of using `ignoreSync()` to prevent an asynchronous function from writing to the console:
+
+```javascript
+await stdout.ignoreAsync(async () => {
+    await functionUnderTestAsync();
+});
+```
+
+
 ## Version History
 
-__2.0.0:__ Add events to stdout.inspect() return value (and stderr). Add support for async/await. BREAKING CHANGE: Requires Node 7.6.0 or higher (due to async/await support)
+__2.0.0:__ Add events to inspect(). Add inspectAsync(), ignoreAsync(). BREAKING CHANGE: Requires Node 7.6.0 or higher (due to async/await support)
 
 __1.1.0:__ Add ability to override stdout.isTTY (and stderr.isTTY).
 

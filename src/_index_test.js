@@ -197,30 +197,6 @@ describe("'asynchronous' inspect", function() {
 		assert.deepEqual(output, ["foo\n"], "returned output");
 	});
 
-	async function tickAsync() {
-		await new Promise((resolve) => {
-			setImmediate(resolve);
-		});
-	}
-
-	async function assertThrowsAsync(fnAsync, expectedRegexOrExactString, message) {
-		message = message ? `${message}: ` : "";
-		try {
-			await fnAsync();
-		}
-		catch (err) {
-			if (expectedRegexOrExactString === undefined) return;
-			if (typeof expectedRegexOrExactString === "string") {
-				assert.equal(err.message, expectedRegexOrExactString, message);
-			}
-			else {
-				assert.matches(err.message, expectedRegexOrExactString, message);
-			}
-			return;
-		}
-		assert.fail(`${message}Expected exception: ${expectedRegexOrExactString}`);
-	}
-
 });
 
 
@@ -280,11 +256,15 @@ describe("'synchronous' ignore", function() {
 	});
 
 	it("simply disables output to console", function() {
+		let fnRan = false;
+
 		// We'll use inspect() to make sure ignore() works. Inception! (Okay, that joke's getting old. Too bad! Mwahaha!)
 		stdout.inspectSync((output) => {
 			stdout.ignoreSync(() => {
 				console.log("foo");
+				fnRan = true;
 			});
+			assert.equal(fnRan, true, "should have ran function");
 			assert.deepEqual(output, [], "console should be ignored");
 			console.log("bar");
 			assert.deepEqual(output, ["bar\n"], "console should be restored");
@@ -301,6 +281,39 @@ describe("'synchronous' ignore", function() {
 
 
 describe("'asynchronous' ignore", function() {
+
+	it("fails nicely when user forgets to pass in a function", async function() {
+		await assertThrowsAsync(async () => {
+			await stdout.ignoreAsync();
+		}, "ignoreAsync() requires a function parameter. Did you mean to call ignore()?");
+	});
+
+	it("simply disables output to console, and works with async function", async function() {
+		let fnRan = false;
+
+		await stdout.inspectAsync(async (output) => {
+			await stdout.ignoreAsync(async () => {
+				await tickAsync();
+				console.log("foo");
+				fnRan = true;
+			});
+			assert.equal(fnRan, true, "should have ran or awaited function");
+			assert.deepEqual(output, [], "console should be ignored");
+			console.log("bar");
+			assert.deepEqual(output, ["bar\n"], "console should be restored");
+		});
+	});
+
+	it("doesn't provide any parameters", async function() {
+		await stdout.ignoreAsync(async () => {
+			assert.equal(arguments.length, 0, "# of arguments");
+		});
+	});
+
+});
+
+
+describe("neutral ignore", function() {
 
 	it("fails nicely when user confuses it for ignoreSync and passes in a function", function() {
 		assert.throws(() => {
@@ -342,3 +355,29 @@ describe("stderr", function() {
 	});
 
 });
+
+
+
+async function tickAsync() {
+	await new Promise((resolve) => {
+		setImmediate(resolve);
+	});
+}
+
+async function assertThrowsAsync(fnAsync, expectedRegexOrExactString, message) {
+	message = message ? `${message}: ` : "";
+	try {
+		await fnAsync();
+	}
+	catch (err) {
+		if (expectedRegexOrExactString === undefined) return;
+		if (typeof expectedRegexOrExactString === "string") {
+			assert.equal(err.message, expectedRegexOrExactString, message);
+		}
+		else {
+			assert.matches(err.message, expectedRegexOrExactString, message);
+		}
+		return;
+	}
+	assert.fail(`${message}Expected exception: ${expectedRegexOrExactString}`);
+}
