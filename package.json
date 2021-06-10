@@ -26,7 +26,7 @@
   "homepage": "https://github.com/jamesshore/test-console",
   "devDependencies": {
     "chai": "^4.3.4",
-    "jake": "^8.0.12",
+    "jake": "^10.8.2",
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
     "simplebuild-jshint": "^0.3.0"
