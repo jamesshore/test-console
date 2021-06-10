@@ -1,15 +1,15 @@
 // Copyright (c) 2014-2015 Titanium I.T. LLC. All rights reserved. For license, see "README" or "LICENSE" file.
 "use strict";
 
-var assert = require("chai").assert;
-var stdout = require("./index.js").stdout;
-var stderr = require("./index.js").stderr;
+const assert = require("chai").assert;
+const stdout = require("./index.js").stdout;
+const stderr = require("./index.js").stderr;
 
 describe("'synchronous' inspect", function() {
 
 	it("calls passed-in function synchronously", function() {
-		var fnCalled = false;
-		var inspectReturned = false;
+		let fnCalled = false;
+		let inspectReturned = false;
 		stdout.inspectSync((output) => {
 			fnCalled = true;
 			assert.isFalse(inspectReturned, "function should be called before inspect call returns");
@@ -19,7 +19,7 @@ describe("'synchronous' inspect", function() {
 	});
 
 	it("fails nicely when user forgets to pass in a function", () => {
-		var errMsg = "inspectSync() requires a function parameter. Did you mean to call inspect()?";
+		const errMsg = "inspectSync() requires a function parameter. Did you mean to call inspect()?";
 		assert.throws(() => {
 			stdout.inspectSync();
 		}, errMsg);
@@ -59,7 +59,7 @@ describe("'synchronous' inspect", function() {
 	});
 
 	it("mocks isTTY value", function() {
-		var originalIsTTY = process.stdout.isTTY;
+		const originalIsTTY = process.stdout.isTTY;
 		stdout.inspectSync({ isTTY: !originalIsTTY }, () => {
 			assert.equal(process.stdout.isTTY, !originalIsTTY, 'isTTY should be changed');
 		});
@@ -68,7 +68,7 @@ describe("'synchronous' inspect", function() {
 
 	it("uses existing isTTY value by default", () => {
 		// Testing for various argument lists
-		var originalIsTTY = process.stdout.isTTY;
+		const originalIsTTY = process.stdout.isTTY;
 		stdout.inspectSync(() => {
 			assert.equal(process.stdout.isTTY, originalIsTTY, 'isTTY should not be changed');
 		});
@@ -93,7 +93,7 @@ describe("'synchronous' inspect", function() {
 	it("restores old behavior when done", function() {
 		// More inception!
 		stdout.inspectSync((output) => {
-			var originalIsTTY = process.stdout.isTTY;
+			const originalIsTTY = process.stdout.isTTY;
 			stdout.inspectSync({ isTTY: !originalIsTTY }, () => {
 				// this space intentionally left blank
 			});
@@ -106,8 +106,8 @@ describe("'synchronous' inspect", function() {
 	it("restores old behavior even when an exception occurs", function() {
 		// inception!
 		stdout.inspectSync((output) => {
-			var originalIsTTY = process.stdout.isTTY;
-			var exceptionPropagated = false;
+			const originalIsTTY = process.stdout.isTTY;
+			let exceptionPropagated = false;
 			try {
 				stdout.inspectSync({ isTTY: !process.stdout.isTTY }, () => {
 					throw new Error("intentional exception");
@@ -124,7 +124,7 @@ describe("'synchronous' inspect", function() {
 	});
 
 	it("also returns output", function() {
-		var output = stdout.inspectSync(() => {
+		const output = stdout.inspectSync(() => {
 			console.log("foo");
 		});
 		assert.deepEqual(output, ["foo\n"], "returned output");
@@ -135,8 +135,8 @@ describe("'synchronous' inspect", function() {
 describe("'asynchronous' inspect", function() {
 
 	it("awaits passed-in function", async function() {
-		var fnCalled = false;
-		var inspectReturned = false;
+		let fnCalled = false;
+		let inspectReturned = false;
 		await stdout.inspectAsync(async function(output) {
 			await tickAsync();
 			fnCalled = true;
@@ -147,7 +147,7 @@ describe("'asynchronous' inspect", function() {
 	});
 
 	it("fails nicely when user forgets to pass in a function", async function() {
-		var errMsg = "inspectAsync() requires a function parameter. Did you mean to call inspect()?";
+		const errMsg = "inspectAsync() requires a function parameter. Did you mean to call inspect()?";
 		await assertThrowsAsync(async () => {
 			await stdout.inspectAsync();
 		}, errMsg);
@@ -175,7 +175,7 @@ describe("'asynchronous' inspect", function() {
 
 	it("restores old behavior even when an exception occurs", async function() {
 		await stdout.inspectAsync(async (output) => {
-			var exceptionPropagated = false;
+			let exceptionPropagated = false;
 			try {
 				await stdout.inspectAsync(async () => {
 					throw new Error("intentional exception");
@@ -191,7 +191,7 @@ describe("'asynchronous' inspect", function() {
 	});
 
 	it("also returns output", async function() {
-		var output = await stdout.inspectAsync(async () => {
+		const output = await stdout.inspectAsync(async () => {
 			console.log("foo");
 		});
 		assert.deepEqual(output, ["foo\n"], "returned output");
@@ -203,7 +203,7 @@ describe("'asynchronous' inspect", function() {
 describe("neutral inspect", function() {
 
 	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
-		var errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
+		const errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
 		assert.throws(() => {
 			stdout.inspect(() => {});
 		}, errMsg);
@@ -213,15 +213,15 @@ describe("neutral inspect", function() {
 	});
 
 	it("is like synchronous version, except you have to restore it manually", function() {
-		var inspect = stdout.inspect();
+		const inspect = stdout.inspect();
 		console.log("foo");
 		assert.deepEqual(inspect.output, ["foo\n"], "output");
 		inspect.restore();
 	});
 
 	it("emits 'data' event when data written", function() {
-		var inspect = stdout.inspect();
-		var data = [];
+		const inspect = stdout.inspect();
+		const data = [];
 		inspect.on("data", (string) => {
 			data.push(string);
 		});
@@ -233,7 +233,7 @@ describe("neutral inspect", function() {
 	it("prevents output to console until restored", function() {
 		// inception!
 		stdout.inspectSync((output) => {
-			var inspect = stdout.inspect();
+			const inspect = stdout.inspect();
 
 			console.log("foo");
 			assert.deepEqual(output, [], "console should be suppressed");
@@ -324,7 +324,7 @@ describe("neutral ignore", function() {
 	it("is like synchronous version, except you have to restore it manually", function() {
 		// inception!
 		stdout.inspectSync((output) => {
-			var restore = stdout.ignore();
+			const restore = stdout.ignore();
 
 			console.log("foo");
 			assert.deepEqual(output, [], "console should be suppressed");
@@ -348,7 +348,7 @@ describe("stderr", function() {
 	});
 
 	it("actually works", function() {
-		var inspect = stderr.inspect();
+		const inspect = stderr.inspect();
 		process.stderr.write("foo");
 		assert.deepEqual(inspect.output, ["foo"], "output");
 		inspect.restore();
