@@ -39,7 +39,7 @@ const stderr = require("test-console").stderr;
 * `stdout.ignoreSync`: Just like `ignore()`, but automatically restores the console when done.
 * `stdout.ignoreAsync`: Just like `ignoreSync()`, but works with async functions.
 
-All functions accept an optional options object as the first argument, where isTTY is the only available option. isTTY, if defined, will override the `stdout` field of the same name.
+All functions accept an optional options object as the first argument, where `isTTY` is the only available option. `isTTY`, if defined, will override the `stdout` field of the same name.
 
 The same API is also available on `stderr`.
 
@@ -65,6 +65,15 @@ inspect.restore();
 assert.deepEqual(inspect.output, [ "foo\n" ]);
 ```
 
+Example of using `inspect()` to test an asynchronous function with await:
+
+```javascript
+const inspect = stdout.inspect();
+await functionUnderTestAsync();
+inspect.restore();
+assert.deepEqual(inspect.output, [ "foo\n" ]);
+```
+
 Example of using `inspect()` to test an asynchronous function with a callback:
 
 ```javascript
@@ -83,14 +92,14 @@ let output = "";
 inspect.on("data", (chunk) => {
     output += chunk;
 });
-await functionUnderTestAsync();
+functionUnderTestAsync();
 inspect.restore();
 assert.equal(output, "foo\n");
 ```
 
 
 ### `output = stdout.inspectSync(options, fn)`
-Or: `output = stdout.inspectSync(fn)`
+### `output = stdout.inspectSync(fn)`
 
 Just like `inspect()`, but automatically restores the console when done.
 
@@ -99,7 +108,7 @@ Just like `inspect()`, but automatically restores the console when done.
 
 * `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
-* `output`: Passed into `fn` and also returned as an array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+* `output`: Passed into `fn` and also returned as an array. Contains one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
 
 Example of using `inspectSync()` to test a synchronous function:
 
@@ -123,7 +132,7 @@ stdout.inspectSync((output) => {
 
 
 ### `output = await stdout.inspectAsync(options, fn)`
-Or: `output = await stdout.inspectAsync(fn)`
+### `output = await stdout.inspectAsync(fn)`
 
 Just like `inspectSync()`, but works with asynchronous functions.
 
@@ -184,7 +193,7 @@ functionUnderTest(() => {
 Example of using `ignore()` to prevent a suite of tests from writing to the console:
 
 ```javascript
-const restoreStdout;
+let restoreStdout;
 
 beforeEach(() => {
     restoreStdout = stdout.ignore();
@@ -199,8 +208,7 @@ afterEach(() => {
 
 
 ### `ignoreSync(options, fn)`
-
-Or: `ignoreSync(fn)`
+### `ignoreSync(fn)`
 
 Just like `ignore()`, but automatically restores the console when done.
 
@@ -218,9 +226,8 @@ stdout.ignoreSync(() => {
 ```
 
 
-### `ignoreAsync(options, fnAsync)`
-
-Or: `ignoreAsync(fn)`
+### `await ignoreAsync(options, fnAsync)`
+### `await ignoreAsync(fn)`
 
 Just like `ignoreSync()`, but works with async/await.
 
@@ -240,7 +247,7 @@ await stdout.ignoreAsync(async () => {
 
 ## Version History
 
-__2.0.0:__ Add events to inspect(). Add inspectAsync(), ignoreAsync(). BREAKING CHANGE: Requires Node 7.6.0 or higher (due to async/await support)
+__2.0.0:__ Add events to inspect(). Add inspectAsync(), ignoreAsync(). **BREAKING CHANGE:** Requires Node 7.6.0 or higher (due to async/await support)
 
 __1.1.0:__ Add ability to override stdout.isTTY (and stderr.isTTY).
 
