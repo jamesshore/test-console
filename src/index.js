@@ -42,11 +42,7 @@ class TestStream {
 
 	inspectSync(options, fn) {
 		expectFunction(arguments, "inspectSync", "inspect");
-
-		if (arguments.length === 1) {
-			fn = options;
-			options = {};
-		}
+		[ options, fn ] = normalizeArgs(options, fn);
 
 		const inspect = this.inspect(options);
 		try {
@@ -66,11 +62,7 @@ class TestStream {
 
 	ignoreSync(options, fn) {
 		expectFunction(arguments, "ignoreSync", "ignore");
-
-		if (arguments.length === 1) {
-			fn = options;
-			options = {};
-		}
+		[ options, fn ] = normalizeArgs(options, fn);
 
 		this.inspectSync(options, () => {
 			fn();
@@ -95,4 +87,12 @@ function expectFunction(args, calledFunction, functionToCallInstead) {
 		throw new Error(calledFunction + "() requires a function parameter. Did you mean to call " +
 			functionToCallInstead + "()?");
 	}
+}
+
+function normalizeArgs(options, fn) {
+	if (fn === undefined) {
+		fn = options;
+		options = {};
+	}
+	return [ options, fn ];
 }
