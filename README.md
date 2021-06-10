@@ -8,9 +8,9 @@ A simple and pragmatic library for testing Node.js console output.
 See the API section for more examples.
 
 ```javascript
-var stdout = require("test-console").stdout;
+const stdout = require("test-console").stdout;
 
-var output = stdout.inspectSync(function() {
+const output = stdout.inspectSync(() => {
     console.log("foo");
 });
 assert.deepEqual(output, [ "foo\n "]);
@@ -25,8 +25,8 @@ This is a Node.js library. Install Node, then:
 To use the library in your code, require it as follows:
 
 ```javascript
-var stdout = require("test-console").stdout;
-var stderr = require("test-console").stderr;
+const stdout = require("test-console").stdout;
+const stderr = require("test-console").stderr;
 ```
 
 
@@ -56,7 +56,7 @@ Redirects writes to `stdout` into an array instead of writing them to the consol
 Example of using `inspect()` to test a synchronous function:
 
 ```javascript
-var inspect = stdout.inspect();
+const inspect = stdout.inspect();
 functionUnderTest();
 inspect.restore();
 assert.deepEqual(inspect.output, [ "foo\n" ]);
@@ -65,8 +65,8 @@ assert.deepEqual(inspect.output, [ "foo\n" ]);
 Example of using `inspect()` to test an asynchronous function:
 
 ```javascript
-var inspect = stdout.inspect();
-functionUnderTest(function() {
+const inspect = stdout.inspect();
+functionUnderTest(() => {
     inspect.restore();
     assert.deepEqual(inspect.output, [ "foo\n" ]);
 });
@@ -88,7 +88,7 @@ Just like `inspect()`, but automatically restores the console when done.
 Example of using `inspectSync()` to test a synchronous function:
 
 ```javascript
-var output = stdout.inspectSync(function() {
+const output = stdout.inspectSync(() => {
     functionUnderTest();
 });
 assert.deepEqual(output, [ "foo\n" ]);
@@ -97,7 +97,7 @@ assert.deepEqual(output, [ "foo\n" ]);
 Example of using `inspectSync() to incrementally test several synchronous functions:
 
 ```javascript
-stdout.inspectSync(function(output) {
+stdout.inspectSync((output) => {
     functionUnderTest();
     assert.deepEqual(output, [ "foo\n" ]);
     anotherFunctionUnderTest();
@@ -118,7 +118,7 @@ Prevent writes to `stdout` from appearing on the console.
 Example of using `ignore()` to prevent a synchronous function from writing to the console:
 
 ```javascript
-var restore = stdout.ignore();
+const restore = stdout.ignore();
 functionUnderTest();
 restore();
 ```
@@ -126,8 +126,8 @@ restore();
 Example of using `ignore()` to prevent an asynchronous function from writing to the console:
 
 ```javascript
-var restore = stdout.ignore();
-functionUnderTest(function() {
+const restore = stdout.ignore();
+functionUnderTest(() => {
     restore();
 });
 ```
@@ -135,13 +135,13 @@ functionUnderTest(function() {
 Example of using `ignore()` to prevent a suite of tests from writing to the console:
 
 ```javascript
-var restoreStdout;
+const restoreStdout;
 
-beforeEach(function() {
+beforeEach(() => {
     restoreStdout = stdout.ignore();
 });
 
-afterEach(function() {
+afterEach(() => {
     restoreStdout();
 });
 
@@ -162,7 +162,7 @@ Just like `ignore()`, but automatically restores the console when done.
 Example of using `ignoreSync()` to prevent a synchronous function from writing to the console:
 
 ```javascript
-stdout.ignoreSync(function() {
+stdout.ignoreSync(() => {
     functionUnderTest();
 });
 ```
