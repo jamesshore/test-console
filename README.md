@@ -34,6 +34,7 @@ const stderr = require("test-console").stderr;
 
 * `stdout.inspect`: Redirects writes to `stdout` into an array instead of writing them to console.
 * `stdout.inspectSync`: Just like `inspect()`, but automatically restores the console when done.
+* `stdout.inspectAsync`: Just like `inspectSync()`, but works with async functions.
 * `stdout.ignore`: Prevent writes to `stdout` from appearing on the console.
 * `stdout.ignoreSync`: Just like `ignore()`, but automatically restores the console when done.
 
@@ -47,7 +48,7 @@ The same API is also available on `stderr`.
 Redirects writes to `stdout` into an array instead of writing them to the console.
 
 * `options`: object [optional]
-  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`.
 
 * `inspect`: Returned as an `EventEmitter` with two properties and one event:
   * `inspect.output`: An array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
@@ -93,7 +94,7 @@ Or: `output = stdout.inspectSync(fn)`
 Just like `inspect()`, but automatically restores the console when done.
 
 * `options`: object [optional]
-  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`.
 
 * `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
 
@@ -115,6 +116,39 @@ stdout.inspectSync((output) => {
     functionUnderTest();
     assert.deepEqual(output, [ "foo\n" ]);
     anotherFunctionUnderTest();
+    assert.deepEqual(output, [ "foo\n", "bar\n" ]);
+});
+```
+
+
+### `output = await stdout.inspectAsync(options, fn)`
+Or: `output = await stdout.inspectAsync(fn)`
+
+Just like `inspectSync()`, but works with asynchronous functions.
+
+* `options`: object [optional]
+  * `isTTY`: If not undefined, this value will be used to temporarily overwrite `stdout.isTTY`.
+
+* `fn(output)`: The function to run while inspecting stdout. After the function returns, stdout.write is automatically restored. Note that `output` is passed into this function in addition to being returned from `inspectSync()`.
+
+* `output`: Passed into `fn` and also returned as an array containing one string for each call to `stdout.write()`. This array updates every time another call to `stdout.write()` is made.
+
+Example of using `inspectSync()` to test an asynchronous function:
+
+```javascript
+const output = await stdout.inspectAsync(async () => {
+    await functionUnderTestAsync();
+});
+assert.deepEqual(output, [ "foo\n" ]);
+```
+
+Example of using `inspectAsync() to incrementally test several asynchronous functions:
+
+```javascript
+await stdout.inspectAsync(async (output) => {
+    await functionUnderTestAsync();
+    assert.deepEqual(output, [ "foo\n" ]);
+    await anotherFunctionUnderTestAsync();
     assert.deepEqual(output, [ "foo\n", "bar\n" ]);
 });
 ```

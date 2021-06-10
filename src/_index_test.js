@@ -134,6 +134,98 @@ describe("'synchronous' inspect", function() {
 
 describe("'asynchronous' inspect", function() {
 
+	it("awaits passed-in function", async function() {
+		var fnCalled = false;
+		var inspectReturned = false;
+		await stdout.inspectAsync(async function(output) {
+			await tickAsync();
+			fnCalled = true;
+			assert.isFalse(inspectReturned, "function should be called before inspect call returns");
+		});
+		inspectReturned = true;
+		assert.isTrue(fnCalled, "function should have been called");
+	});
+
+	it("fails nicely when user forgets to pass in a function", async function() {
+		var errMsg = "inspectAsync() requires a function parameter. Did you mean to call inspect()?";
+		await assertThrowsAsync(async () => {
+			await stdout.inspectAsync();
+		}, errMsg);
+		await assertThrowsAsync(async () => {
+			await stdout.inspectAsync({});
+		}, errMsg);
+	});
+
+	it("provides writes to passed-in function", async function() {
+		await stdout.inspectAsync(async (output) => {
+			process.stdout.write("foo");
+			assert.deepEqual(output, ["foo"], "one call to stdout.write()");
+		});
+	});
+
+	it("restores old behavior when done", async function() {
+		await stdout.inspectAsync(async (output) => {
+			await stdout.inspectAsync(async () => {
+				// this space intentionally left blank
+			});
+			console.log("foo");
+			assert.deepEqual(output, ["foo\n"], "console should be restored");
+		});
+	});
+
+	it("restores old behavior even when an exception occurs", async function() {
+		await stdout.inspectAsync(async (output) => {
+			var exceptionPropagated = false;
+			try {
+				await stdout.inspectAsync(async () => {
+					throw new Error("intentional exception");
+				});
+			}
+			catch(err) {
+				exceptionPropagated = true;
+			}
+			assert.isTrue(exceptionPropagated, "exception should be propagated");
+			console.log("foo");
+			assert.deepEqual(output, ["foo\n"], "console should be restored");
+		});
+	});
+
+	it("also returns output", async function() {
+		var output = await stdout.inspectAsync(async () => {
+			console.log("foo");
+		});
+		assert.deepEqual(output, ["foo\n"], "returned output");
+	});
+
+	async function tickAsync() {
+		await new Promise((resolve) => {
+			setImmediate(resolve);
+		});
+	}
+
+	async function assertThrowsAsync(fnAsync, expectedRegexOrExactString, message) {
+		message = message ? `${message}: ` : "";
+		try {
+			await fnAsync();
+		}
+		catch (err) {
+			if (expectedRegexOrExactString === undefined) return;
+			if (typeof expectedRegexOrExactString === "string") {
+				assert.equal(err.message, expectedRegexOrExactString, message);
+			}
+			else {
+				assert.matches(err.message, expectedRegexOrExactString, message);
+			}
+			return;
+		}
+		assert.fail(`${message}Expected exception: ${expectedRegexOrExactString}`);
+	}
+
+});
+
+
+describe("neutral inspect", function() {
+
 	it("fails nicely when user confuses it for inspectSync and passes in a function", function() {
 		var errMsg = "inspect() doesn't take a function parameter. Did you mean to call inspectSync()?";
 		assert.throws(() => {

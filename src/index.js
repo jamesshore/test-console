@@ -54,6 +54,20 @@ class TestStream {
 		return inspect.output;
 	}
 
+	async inspectAsync(options, fnAsync) {
+		expectFunction(arguments, "inspectAsync", "inspect");
+		[ options, fnAsync ] = normalizeArgs(options, fnAsync);
+
+		const inspect = this.inspect(options);
+		try {
+			await fnAsync(inspect.output);
+		}
+		finally {
+			inspect.restore();
+		}
+		return inspect.output;
+	}
+
 	ignore(options) {
 		expectNoFunction(arguments, "ignore", "ignoreSync");
 
