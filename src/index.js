@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Titanium I.T. LLC. All rights reserved. For license, see "README" or "LICENSE" file.
 "use strict";
-var EventEmitter = require("events");
+const EventEmitter = require("events");
 
 class TestStream {
 
@@ -11,23 +11,23 @@ class TestStream {
 	inspect(options) {
 		expectNoFunction(arguments, "inspect", "inspectSync");
 
-		var isTTY;
+		let isTTY;
 		if (options && options.isTTY !== undefined) {
 			isTTY = options.isTTY;
 		}
 
 		// This code inspired by http://userinexperience.com/?p=714
-		var output = [];
-		var stream = this._stream;
-		var res = new EventEmitter();
+		const output = [];
+		const stream = this._stream;
+		const res = new EventEmitter();
 
-		var originalWrite = stream.write;
+		const originalWrite = stream.write;
 		stream.write = (string) => {
 			output.push(string);
 			res.emit("data", string);
 		};
 
-		var originalIsTTY = stream.isTTY;
+		const originalIsTTY = stream.isTTY;
 		if (isTTY !== undefined) {
 			stream.isTTY = isTTY;
 		}
@@ -48,7 +48,7 @@ class TestStream {
 			options = {};
 		}
 
-		var inspect = this.inspect(options);
+		const inspect = this.inspect(options);
 		try {
 			fn(inspect.output);
 		}
