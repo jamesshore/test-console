@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2015 Titanium I.T. LLC. All rights reserved. For license, see "README" or "LICENSE" file.
 "use strict";
+var EventEmitter = require("events");
 
 exports.stdout = new TestStream(process.stdout);
 exports.stderr = new TestStream(process.stderr);
@@ -19,10 +20,12 @@ TestStream.prototype.inspect = function(options) {
 	// This code inspired by http://userinexperience.com/?p=714
 	var output = [];
 	var stream = this._stream;
+	var res = new EventEmitter();
 
 	var originalWrite = stream.write;
 	stream.write = function(string) {
 		output.push(string);
+		res.emit("data", string);
 	};
 
 	var originalIsTTY = stream.isTTY;
@@ -30,13 +33,12 @@ TestStream.prototype.inspect = function(options) {
 		stream.isTTY = isTTY;
 	}
 
-	return {
-		output: output,
-		restore: function() {
-			stream.write = originalWrite;
-			stream.isTTY = originalIsTTY;
-		}
+	res.output = output;
+	res.restore = function() {
+		stream.write = originalWrite;
+		stream.isTTY = originalIsTTY;
 	};
+	return res;
 };
 
 TestStream.prototype.inspectSync = function(options, fn) {
