@@ -151,6 +151,17 @@ describe("'asynchronous' inspect", function() {
 		inspect.restore();
 	});
 
+	it("emits 'data' event when data written", function() {
+		var inspect = stdout.inspect();
+		var data = [];
+		inspect.on("data", function(string) {
+			data.push(string);
+		});
+		console.log("foo");
+		inspect.restore();
+		assert.deepEqual(data, ["foo\n"], "chunk should be emitted");
+	});
+
 	it("prevents output to console until restored", function() {
 		// inception!
 		stdout.inspectSync(function(output) {
@@ -165,16 +176,6 @@ describe("'asynchronous' inspect", function() {
 		});
 	});
 
-  it("allows output to be captured asynchronously", function() {
-		var inspect = stdout.inspect();
-		var data = [];
-		inspect.on("data", function (string) {
-			data.push(string);
-		});
-		console.log("foo");
-		inspect.restore();
-		assert.deepEqual(data, ["foo\n"], "chunk should be emitted");
-	});
 });
 
 
